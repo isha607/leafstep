@@ -14,7 +14,114 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      actions_completed: {
+        Row: {
+          action_key: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          action_key: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          action_key?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      footprint_logs: {
+        Row: {
+          created_at: string
+          diet: number
+          home_energy: number
+          id: string
+          month: string
+          shopping: number
+          total: number
+          transport: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          diet?: number
+          home_energy?: number
+          id?: string
+          month: string
+          shopping?: number
+          total?: number
+          transport?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          diet?: number
+          home_energy?: number
+          id?: string
+          month?: string
+          shopping?: number
+          total?: number
+          transport?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      habits: {
+        Row: {
+          created_at: string
+          day: string
+          habit_key: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          day: string
+          habit_key: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          day?: string
+          habit_key?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string
+          id: string
+          score: number
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string
+          id: string
+          score?: number
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string
+          id?: string
+          score?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
