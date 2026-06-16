@@ -3,7 +3,7 @@ import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router"
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/hooks/use-auth";
-import { enableDemoMode } from "@/lib/leafstep-storage";
+import { enableDemoMode, disableDemoMode } from "@/lib/leafstep-storage";
 import { toast } from "sonner";
 import { Leaf, Eye, EyeOff, Loader2, Sparkles } from "lucide-react";
 
@@ -31,7 +31,10 @@ function AuthPage() {
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    if (!search.demo) {
+      disableDemoMode();
+    }
+  }, [search.demo]);
 
   useEffect(() => {
     if (!loading && user) navigate({ to: "/dashboard", replace: true });
@@ -78,16 +81,27 @@ function AuthPage() {
 
   async function handleGoogle() {
     setBusy(true);
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
-    });
-    if (result.error) {
-      toast.error("Google sign-in failed. Please try again.");
-      setBusy(false);
-      return;
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/auth`,
+        },
+      });
+      if (error) throw error;
+    } catch (err) {
+      console.warn("Native Supabase Google OAuth failed, trying Lovable fallback:", err);
+      const result = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: window.location.origin,
+      });
+      if (result.error) {
+        toast.error("Google sign-in failed. Please try again.");
+        setBusy(false);
+        return;
+      }
+      if (result.redirected) return;
+      navigate({ to: "/dashboard", replace: true });
     }
-    if (result.redirected) return;
-    navigate({ to: "/dashboard", replace: true });
   }
 
   return (

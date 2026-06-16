@@ -12,10 +12,11 @@ import {
   BarChart3,
 } from "lucide-react";
 
+
 export const Route = createFileRoute("/")({
   beforeLoad: async () => {
     const { data } = await supabase.auth.getSession();
-    if (data.session?.user || (typeof window !== "undefined" && isDemoMode())) {
+    if (data.session?.user) {
       throw redirect({ to: "/dashboard" });
     }
   },
@@ -75,8 +76,7 @@ function LandingPage() {
               Sign in
             </Link>
             <Link
-              to="/auth"
-              search={{ mode: "signup" }}
+              to="/dashboard"
               className="btn-glow rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground"
             >
               Get started
@@ -114,8 +114,7 @@ function LandingPage() {
             </p>
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Link
-                to="/auth"
-                search={{ demo: true }}
+                to="/dashboard"
                 className="btn-glow flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3.5 text-sm font-bold text-primary-foreground sm:w-auto"
               >
                 Try free demo
@@ -216,8 +215,7 @@ function LandingPage() {
             Join thousands tracking their footprint and building greener habits every day.
           </p>
           <Link
-            to="/auth"
-            search={{ demo: true }}
+            to="/dashboard"
             className="btn-glow mt-8 inline-flex items-center gap-2 rounded-xl bg-primary px-8 py-3.5 text-sm font-bold text-primary-foreground"
           >
             Start tracking free

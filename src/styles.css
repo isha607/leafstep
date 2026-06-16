@@ -2,8 +2,6 @@
 @source "../src";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
-
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -52,33 +50,33 @@
 :root {
   --radius: 1rem;
 
-  --background: #f6f8f7;
-  --foreground: #0f1f1a;
+  --background: #090e0c;
+  --foreground: #e8f5f1;
 
-  --card: #ffffff;
-  --card-foreground: #0f1f1a;
+  --card: #111a17;
+  --card-foreground: #e8f5f1;
 
-  --popover: #ffffff;
-  --popover-foreground: #0f1f1a;
+  --popover: #111a17;
+  --popover-foreground: #e8f5f1;
 
-  --primary: #1d9e75;
-  --primary-foreground: #ffffff;
-  --primary-soft: #e4f4ee;
+  --primary: #1ebd8d;
+  --primary-foreground: #090e0c;
+  --primary-soft: #123026;
 
-  --secondary: #eef2f1;
-  --secondary-foreground: #1a2c26;
+  --secondary: #162420;
+  --secondary-foreground: #e8f5f1;
 
-  --muted: #eef2f1;
-  --muted-foreground: #647a72;
+  --muted: #162420;
+  --muted-foreground: #7d968e;
 
-  --accent: #e4f4ee;
-  --accent-foreground: #136b50;
+  --accent: #123026;
+  --accent-foreground: #1ebd8d;
 
   --destructive: #e0533d;
   --destructive-foreground: #ffffff;
 
-  --border: #e3e9e7;
-  --input: #e3e9e7;
+  --border: #1f332e;
+  --input: #1f332e;
   --ring: #1d9e75;
 
   --navy: #0a0e1a;

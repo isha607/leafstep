@@ -134,7 +134,7 @@ export function useActions(userId: string | undefined) {
       .select("action_id")
       .eq("user_id", userId)
       .then(({ data }) => {
-        if (data) setCompleted(new Set(data.map((r: ActionCompleted) => r.action_id)));
+        if (data) setCompleted(new Set(data.map((r: any) => r.action_id)));
       });
   }, [userId]);
 

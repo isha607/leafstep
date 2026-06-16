@@ -77,10 +77,10 @@ export function setStoredFootprint(userId: string, fp: Omit<StoredFootprint, "up
 }
 
 export const DEFAULT_FOOTPRINT: StoredFootprint = {
-  transport: 3.1,
-  diet: 2.4,
-  energy: 1.8,
-  shopping: 1.3,
-  total: 8.6,
-  updatedAt: new Date().toISOString(),
+  transport: 0,
+  diet: 0,
+  energy: 0,
+  shopping: 0,
+  total: 0,
+  updatedAt: "",
 };
