@@ -1,6 +1,13 @@
 {
   "name": "tanstack_start_ts",
   "private": true,
+  "private": true,
+"engines": {
+  "node": ">=20.0.0"
+}, {
+  "node": ">=20.0.0"
+},
+"sideEffects": false,
   "overrides": {
     "tslib": "^2.8.1"
   },
