@@ -6,8 +6,11 @@ export default defineConfig({
   },
   nitro: {
     preset: "vercel",
-    rollupConfig: {
-      external: (id) => false,
+    moduleSideEffects: ["tslib"],
+  },
+  vite: {
+    ssr: {
+      noExternal: ["tslib", "@supabase/functions-js"],
     },
   },
 });
