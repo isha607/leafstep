@@ -81,7 +81,7 @@ var HEADERS = { TSS_SHELL: "X-TSS_SHELL" };
 * the dev styles URL for route-scoped CSS collection.
 */
 async function getStartManifest(matchedRoutes) {
-	const { tsrStartManifest } = await import("../_tanstack-start-manifest_v-CA4pTIvL.mjs");
+	const { tsrStartManifest } = await import("../_tanstack-start-manifest_v-CLPl4meD.mjs");
 	const startManifest = tsrStartManifest();
 	let routes = startManifest.routes;
 	routes[rootRouteId];
@@ -1415,7 +1415,7 @@ function createStartHandler(cbOrOptions) {
 					manifest,
 					getRequestAssets: () => getStartContext({ throwIfNotFound: false })?.requestAssets
 				});
-				routerInstance.update({ additionalContext: { serverContext } });
+				routerInstance.options.additionalContext = { serverContext };
 				await routerInstance.load();
 				if (routerInstance.state.redirect) return normalizeSsrResponse(routerInstance.state.redirect);
 				earlyHints?.collectDynamic(routerInstance.stores.matches.get());

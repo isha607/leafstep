@@ -1,11 +1,19 @@
 import { __rest } from "tslib";
 //#region node_modules/@supabase/auth-js/dist/module/lib/version.js
-var version = "2.108.1";
+var version = "2.108.2";
 //#endregion
 //#region node_modules/@supabase/auth-js/dist/module/lib/constants.js
 /** Current session will be checked for refresh at this interval. */
 var AUTO_REFRESH_TICK_DURATION_MS = 30 * 1e3;
 var EXPIRY_MARGIN_MS = 3 * AUTO_REFRESH_TICK_DURATION_MS;
+/**
+* After a refresh fails, serial callers (including the next auto-refresh
+* tick) within this window receive the cached failure instead of firing
+* another /token request. Two ticks: each outage burns at most one /token
+* call per cooldown window. Cleared on any successful refresh (locally or
+* via BroadcastChannel from another tab) and on `_removeSession`.
+*/
+var REFRESH_FAILURE_COOLDOWN_MS = 2 * AUTO_REFRESH_TICK_DURATION_MS;
 var GOTRUE_URL = "http://localhost:9999";
 var STORAGE_KEY = "supabase.auth.token";
 var DEFAULT_HEADERS = { "X-Client-Info": `gotrue-js/${version}` };
@@ -787,6 +795,8 @@ var _getErrorMessage = (err) => {
 	return JSON.stringify(err);
 };
 var NETWORK_ERROR_CODES = [
+	500,
+	501,
 	502,
 	503,
 	504,
@@ -795,6 +805,11 @@ var NETWORK_ERROR_CODES = [
 	522,
 	523,
 	524,
+	525,
+	526,
+	527,
+	528,
+	529,
 	530
 ];
 async function handleError(error) {
@@ -3062,6 +3077,21 @@ var GoTrueClient = class GoTrueClient {
 		this.visibilityChangedCallback = null;
 		this.refreshingDeferred = null;
 		/**
+		* Cache of the most recent refresh failure, keyed by the refresh token
+		* that failed. Serial callers passing the *same* token within
+		* `REFRESH_FAILURE_COOLDOWN_MS` (including subsequent auto-refresh ticks)
+		* receive this cached result instead of firing another `/token` request.
+		* Callers passing a *different* token (token rotation pickup, explicit
+		* `setSession`/`refreshSession({ refresh_token })`, multi-account switch)
+		* bypass the cache and attempt a fresh refresh as they should.
+		* Cleared on any successful refresh (locally or via BroadcastChannel from
+		* another tab) and on `_removeSession`.
+		*
+		* Pairs with `refreshingDeferred`: concurrent callers share the in-flight
+		* promise, serial callers within the cooldown share the failure result.
+		*/
+		this.lastRefreshFailure = null;
+		/**
 		* Monotonic counter incremented at the top of `_removeSession`, before any
 		* `await`. The commit guard inside `_callRefreshToken` captures this value
 		* before `_saveSession` and re-checks it after, so a `signOut` that
@@ -3172,6 +3202,7 @@ var GoTrueClient = class GoTrueClient {
 			}
 			(_c = this.broadcastChannel) === null || _c === void 0 || _c.addEventListener("message", async (event) => {
 				this._debug("received broadcast notification from other tab or client", event);
+				if (event.data.event === "TOKEN_REFRESHED" || event.data.event === "SIGNED_IN") this.lastRefreshFailure = null;
 				try {
 					await this._notifyAllSubscribers(event.data.event, event.data.session, false);
 				} catch (error) {
@@ -5333,10 +5364,19 @@ var GoTrueClient = class GoTrueClient {
 				};
 			}
 			const { data: session, error } = await this._callRefreshToken(currentSession.refresh_token);
-			if (error) return this._returnResult({
-				data: { session: null },
-				error
-			});
+			if (error) {
+				if (!!(currentSession.expires_at && currentSession.expires_at * 1e3 > Date.now())) {
+					const stillStored = await getItemAsync(this.storage, this.storageKey);
+					if (stillStored && stillStored.refresh_token === currentSession.refresh_token) return this._returnResult({
+						data: { session: currentSession },
+						error: null
+					});
+				}
+				return this._returnResult({
+					data: { session: null },
+					error
+				});
+			}
 			return this._returnResult({
 				data: { session },
 				error: null
@@ -6787,13 +6827,7 @@ var GoTrueClient = class GoTrueClient {
 				if (this.autoRefreshToken && currentSession.refresh_token) {
 					const { error } = await this._callRefreshToken(currentSession.refresh_token);
 					if (error) if (isAuthRefreshDiscardedError(error)) this._debug(debugName, "refresh discarded by commit guard", error);
-					else {
-						this._debug(debugName, "refresh failed", error);
-						if (!isAuthRetryableFetchError(error)) {
-							this._debug(debugName, "refresh failed with a non-retryable error, removing the session", error);
-							await this._removeSession();
-						}
-					}
+					else this._debug(debugName, "refresh failed", error);
 				}
 			} else if (currentSession.user && currentSession.user.__isUserNotAvailableProxy === true) try {
 				const { data, error: userError } = await this._getUser(currentSession.access_token);
@@ -6819,6 +6853,10 @@ var GoTrueClient = class GoTrueClient {
 		var _a, _b;
 		if (!refreshToken) throw new AuthSessionMissingError();
 		if (this.refreshingDeferred) return this.refreshingDeferred.promise;
+		if (this.lastRefreshFailure && this.lastRefreshFailure.refreshToken === refreshToken && Date.now() < this.lastRefreshFailure.expiresAt) {
+			this._debug("#_callRefreshToken()", "returning cached failure (cooldown active)");
+			return this.lastRefreshFailure.result;
+		}
 		const debugName = `#_callRefreshToken()`;
 		this._debug(debugName, "begin");
 		try {
@@ -6858,6 +6896,7 @@ var GoTrueClient = class GoTrueClient {
 				data: data.session,
 				error: null
 			};
+			this.lastRefreshFailure = null;
 			this.refreshingDeferred.resolve(result);
 			return result;
 		} catch (error) {
@@ -6867,7 +6906,16 @@ var GoTrueClient = class GoTrueClient {
 					data: null,
 					error
 				};
-				if (!isAuthRetryableFetchError(error)) await this._removeSession();
+				if (!isAuthRetryableFetchError(error)) {
+					const storedNow = await getItemAsync(this.storage, this.storageKey);
+					if (!!((storedNow === null || storedNow === void 0 ? void 0 : storedNow.expires_at) && storedNow.expires_at * 1e3 > Date.now())) this._debug(debugName, "proactive refresh failed, access token still valid — preserving session");
+					else await this._removeSession();
+				}
+				this.lastRefreshFailure = {
+					refreshToken,
+					result,
+					expiresAt: Date.now() + REFRESH_FAILURE_COOLDOWN_MS
+				};
 				(_a = this.refreshingDeferred) === null || _a === void 0 || _a.resolve(result);
 				return result;
 			}
@@ -6928,6 +6976,7 @@ var GoTrueClient = class GoTrueClient {
 	async _removeSession() {
 		this._sessionRemovalEpoch += 1;
 		this._debug("#_removeSession()");
+		this.lastRefreshFailure = null;
 		this.suppressGetSessionWarning = false;
 		await removeItemAsync(this.storage, this.storageKey);
 		await removeItemAsync(this.storage, this.storageKey + "-code-verifier");
