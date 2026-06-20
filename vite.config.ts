@@ -5,12 +5,6 @@ export default defineConfig({
     server: { entry: "server" },
   },
   nitro: {
-    preset: "vercel",
-    moduleSideEffects: ["tslib"],
-  },
-  vite: {
-    ssr: {
-      noExternal: ["tslib", "@supabase/functions-js"],
-    },
+    preset: "node-server",
   },
 });
