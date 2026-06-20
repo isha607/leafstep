@@ -6,8 +6,12 @@ export default defineConfig({
   },
   nitro: {
     preset: "vercel",
+    rollupConfig: {
+      external: [],
+    },
     externals: {
       inline: ["tslib"],
+      traceInclude: ["tslib"],
     },
   },
 });
