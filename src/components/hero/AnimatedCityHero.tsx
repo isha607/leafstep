@@ -78,11 +78,22 @@ export default function AnimatedCityHero({ mode, onModeChange }: { mode: Transpo
   const stateRef  = useRef({ smogAlpha: 0.72, targetSmog: 0.72, fogColor: "180,140,80", mode: "car" as TransportMode });
   const dataRef   = useRef<{ buildings: Building[]; vehicles: Vehicle[]; particles: Particle[]; stars: { x: number; y: number; r: number; alpha: number }[]; smogClouds: { x: number; y: number; r: number; speed: number; alpha: number }[] }>({ buildings: [], vehicles: [], particles: [], stars: [], smogClouds: [] });
   const rafRef    = useRef<number>(0);
+  const [liveAqi, setLiveAqi] = useState<number | null>(null);
 
   useEffect(() => {
     dataRef.current.buildings  = genBuildings();
     dataRef.current.stars      = Array.from({ length: 60 }, () => ({ x: Math.random(), y: Math.random() * 0.4, r: Math.random() * 1.2, alpha: 0.3 + Math.random() * 0.5 }));
     dataRef.current.smogClouds = Array.from({ length: 18 }, () => ({ x: Math.random() * 800, y: Math.random() * 200 + 40, r: 40 + Math.random() * 60, speed: 0.1 + Math.random() * 0.2, alpha: 0.1 + Math.random() * 0.15 }));
+  }, []);
+
+  useEffect(() => {
+    const token = import.meta.env.VITE_WAQI_TOKEN ?? "demo";
+    fetch(`https://api.waqi.info/feed/aurangabad/?token=${token}`)
+      .then(r => r.json())
+      .then(json => {
+        if (json.status === "ok") setLiveAqi(json.data.aqi);
+      })
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -304,7 +315,7 @@ export default function AnimatedCityHero({ mode, onModeChange }: { mode: Transpo
       <div className="absolute top-3 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-black/60 backdrop-blur-md border border-white/10 rounded-full px-4 py-2 text-xs">
         <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: aqiColor, boxShadow: `0 0 6px ${aqiColor}` }} />
         <span className="text-white/50">AQI</span>
-        <span className="font-medium" style={{ color: aqiColor }}>{cfg.aqi}</span>
+        <span className="font-medium" style={{ color: aqiColor }}>{liveAqi ?? cfg.aqi}</span>
         <span className="w-px h-3 bg-white/15" />
         <span className="text-white/50">CO₂ today</span>
         <span className="text-white font-medium">{cfg.co2}</span>

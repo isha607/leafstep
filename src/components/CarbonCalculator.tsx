@@ -22,8 +22,8 @@ const DEFAULT: CalcData = {
 function calcFootprint(d: CalcData) {
   const transport = (d.carKmPerWeek * 52 * 0.21) / 1000 + d.flightsPerYear * 0.255;
   const diet = (d.meatMealsPerWeek * 2.5 + (14 - d.meatMealsPerWeek) * 0.5) * 52 / 1000;
-  const energy = (d.electricityKwhPerMonth * 0.233 * 12) / 1000 + [0, 0.3, 0.7, 1.4][d.gasUseLevel];
-  const shopping = d.newItemsPerMonth * 12 * 0.03;
+  const energy = (d.electricityKwhPerMonth * 0.716 * 12) / 1000;
+  const shopping = d.newItemsPerMonth * 12 * 0.06;
   return {
     transport: +transport.toFixed(2),
     diet: +diet.toFixed(2),
@@ -34,10 +34,10 @@ function calcFootprint(d: CalcData) {
 }
 
 const STEPS = [
-  { icon: Car,          label: "Transport",    color: "text-rose-500",   bg: "bg-rose-50",   border: "border-rose-200" },
-  { icon: Utensils,     label: "Diet",         color: "text-amber-500",  bg: "bg-amber-50",  border: "border-amber-200" },
-  { icon: Zap,          label: "Home Energy",  color: "text-blue-500",   bg: "bg-blue-50",   border: "border-blue-200" },
-  { icon: ShoppingCart, label: "Shopping",     color: "text-purple-500", bg: "bg-purple-50", border: "border-purple-200" },
+  { icon: Car,          label: "Transport",    color: "text-rose-500",   bg: "bg-rose-50 dark:bg-rose-950/20",   border: "border-rose-200 dark:border-rose-900/30" },
+  { icon: Utensils,     label: "Diet",         color: "text-amber-500",  bg: "bg-amber-50 dark:bg-amber-950/20",  border: "border-amber-200 dark:border-amber-900/30" },
+  { icon: Zap,          label: "Home Energy",  color: "text-blue-500",   bg: "bg-blue-50 dark:bg-blue-950/20",   border: "border-blue-200 dark:border-blue-900/30" },
+  { icon: ShoppingCart, label: "Shopping",     color: "text-purple-500", bg: "bg-purple-50 dark:bg-purple-950/20", border: "border-purple-200 dark:border-purple-900/30" },
 ];
 
 const GAS_LABELS = ["None / Electric", "Low", "Medium", "High"];
@@ -241,7 +241,7 @@ export function CarbonCalculator({
 
           {/* Step header */}
           <div className={`flex items-center gap-3 rounded-xl border p-3 ${stepInfo.bg} ${stepInfo.border}`}>
-            <span className={`grid h-9 w-9 place-items-center rounded-lg bg-white ${stepInfo.color}`}>
+            <span className={`grid h-9 w-9 place-items-center rounded-lg bg-white dark:bg-slate-900 ${stepInfo.color}`}>
               <StepIcon className="h-5 w-5" />
             </span>
             <div>

@@ -32,11 +32,12 @@ export function AppShell({ children }: { children: ReactNode }) {
   const currentPath  = routerState.location.pathname;
 
   async function signOut() {
+    const wasDemo = isDemo;
     disableDemoMode();
     await queryClient.cancelQueries();
     queryClient.clear();
     await supabase.auth.signOut();
-    navigate({ to: "/auth", replace: true });
+    navigate({ to: wasDemo ? "/" : "/auth", replace: true });
   }
 
   return (

@@ -12,7 +12,7 @@ import {
 import AnimatedCityHero, { type TransportMode } from "@/components/hero/AnimatedCityHero";
 import { CarbonCalculator } from "@/components/CarbonCalculator";
 import { InsightBanner } from "@/components/InsightBanner";
-import { AirQualityWidget } from "@/components/AirQualityWidget";
+
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -473,9 +473,9 @@ function Dashboard() {
               Build daily habits →
             </Link>
           </section>
-          <AirQualityWidget />
         </div>
       </div>
+
     </div>
   );
 }
