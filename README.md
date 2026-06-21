@@ -18,6 +18,13 @@ Three simple steps from awareness to action:
 
 ---
 
+## How Leafstep acts as a personal assistant
+Leafstep is designed for an individual or household user. The app analyzes the user's calculator inputs and dynamically surfaces the highest-impact action for their specific emission profile — for example, it recommends EV/transit only when transport is the dominant category, not generically.
+
+The experience already includes context-based decision making in the UI: `InsightBanner` uses conditional logic such as `if (totalTons > 7) ... else ...` to serve the right insight for the current emission profile, while `CarbonCalculator` pushes targeted tips like transit when transport emissions are high.
+
+---
+
 ## Features
 
 **Understand your impact**
@@ -31,6 +38,9 @@ Personalized recommendations ranked by CO2 savings — from meat-free days to sw
 
 **Build lasting habits**
 Track daily eco habits with streaks, weekly progress, and visible CO2 avoided.
+
+**Efficient app behavior**
+Lazy-loaded UI, TanStack Query caching, and localStorage fallback keep the experience fast, resilient, and responsive even on slow connections.
 
 **Live air quality**
 Real-time AQI for Indian cities via the WAQI API, with health guidance based on pollution level.
@@ -131,6 +141,14 @@ SUPABASE_URL
 SUPABASE_PUBLISHABLE_KEY
 SUPABASE_SERVICE_ROLE_KEY
 ```
+
+---
+
+## Security
+- Environment files are excluded from source control: `.gitignore` already excludes `.env*`.
+- Supabase Row Level Security is used so users can only read and write their own `profiles`, `footprint_logs`, `habits`, and `actions_completed` records.
+- Sensitive secrets such as `SUPABASE_SERVICE_ROLE_KEY` are kept on the server side and never exposed to browser clients.
+- Client-side code only uses publishable keys like `VITE_SUPABASE_PUBLISHABLE_KEY`; private server-side keys are separated in server-only code paths.
 
 ---
 

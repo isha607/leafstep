@@ -25,7 +25,7 @@ interface InsightBannerProps {
 function getInsights({ totalTons = 0, streak = 0, topCategory = "Transport", actionsCompleted = 0, totalActions = 6, weeklySavedKg = 0 }: InsightBannerProps): Insight[] {
   const list: Insight[] = [];
   if (totalTons === 0) {
-    list.push({ id: "no-data", icon: Leaf, iconColor: "text-primary", iconBg: "bg-primary-soft", headline: "Calculate your footprint to get started!", body: "Answer 4 quick questions to see your personal CO2 breakdown and get actionable tips.", cta: "Calculate now", ctaTo: "/calculator" });
+    list.push({ id: "no-data", icon: Leaf, iconColor: "text-primary", iconBg: "bg-primary-soft", headline: "Hi, I'm here to help you understand your footprint.", body: "Answer 4 quick questions to see your personal CO2 breakdown and get actionable tips.", cta: "Calculate now", ctaTo: "/calculator" });
     return list;
   }
   if (totalTons > 7) {

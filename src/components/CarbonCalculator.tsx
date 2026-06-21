@@ -59,6 +59,7 @@ function Slider({
       {description && <p className="text-xs text-muted-foreground">{description}</p>}
       <input
         type="range"
+        aria-label={label}
         min={min}
         max={max}
         step={step}
@@ -216,6 +217,7 @@ export function CarbonCalculator({
         {onClose && (
           <button
             onClick={onClose}
+            aria-label="Close calculator"
             className="grid h-8 w-8 place-items-center rounded-xl text-muted-foreground transition-colors hover:bg-secondary"
           >
             ✕
