@@ -1,20 +1,42 @@
-# 🌿 Leafstep — Carbon Footprint Tracker
+# 🌿 Leafstep — Track & Shrink Your Carbon Footprint
 
-A personal carbon footprint tracker built for individuals to understand, track, and reduce their environmental impact through simple actions and personalized insights.
+Leafstep helps individuals understand, track, and reduce their environmental impact through simple actions and personalized insights — no climate science degree required.
 
 **Live app:** [https://leafstep-production.up.railway.app](https://leafstep-production.up.railway.app)
 
+> Understand · Track · Reduce
+
 ---
 
-## What it does
+## How it works
 
-Leafstep helps people answer one question: *how much CO₂ am I actually responsible for, and what can I do about it?*
+Three simple steps from awareness to action:
 
-- **Carbon Calculator** — a 4-step questionnaire covering transport, diet, home energy, and shopping habits that estimates annual CO₂ emissions in tonnes
-- **Dashboard** — an animated city skyline that visually responds to your commute choice (car, bus, bike, walk, EV), showing smog clear up as you choose greener transport, alongside a CO₂ score ring, category breakdown, and 6-month trend
-- **Actions** — ranked, high-impact recommendations tailored to the user's footprint, plus a carbon offset marketplace (tree planting, solar kits, biogas, clean water access)
-- **Habits Tracker** — a weekly habit grid for logging daily eco-actions, with streaks and CO₂ saved
-- **Live Air Quality** — real-time AQI data for Indian cities via the WAQI API, with health guidance based on pollution level
+1. **Calculate** — Estimate your footprint in 4 quick steps
+2. **Act** — Pick personalized actions that fit your life
+3. **Track** — Log habits and watch your score improve
+
+---
+
+## Features
+
+**Understand your impact**
+A guided carbon calculator breaks down transport, diet, energy, and shopping into clear annual CO2 totals — with India-specific emission factors.
+
+**Animated city dashboard**
+A canvas-based skyline that visually responds to your commute choice. Pick car, bus, bike, walk, or EV and watch the smog clear (or thicken) in real time, alongside AQI, CO2-per-trip, and money saved.
+
+**Simple, high-impact actions**
+Personalized recommendations ranked by CO2 savings — from meat-free days to switching to LED bulbs — plus a carbon offset marketplace (tree planting, solar kits, biogas, clean water access).
+
+**Build lasting habits**
+Track daily eco habits with streaks, weekly progress, and visible CO2 avoided.
+
+**Live air quality**
+Real-time AQI for Indian cities via the WAQI API, with health guidance based on pollution level.
+
+**Try before you sign up**
+A no-account demo mode lets anyone explore the full dashboard before creating an account.
 
 ---
 
@@ -23,12 +45,12 @@ Leafstep helps people answer one question: *how much CO₂ am I actually respons
 | Layer | Technology |
 |---|---|
 | Frontend | React 19, TypeScript, Tailwind CSS 4 |
-| Routing | TanStack Router (file-based, with SSR via TanStack Start) |
+| Routing | TanStack Router (file-based, SSR via TanStack Start) |
 | Data fetching | TanStack Query |
 | Backend | Supabase (Auth, Postgres, Row Level Security) |
 | Charts | Recharts |
 | Icons | Lucide React |
-| Hosting | Railway (Node.js server) |
+| Hosting | Railway (Node.js server, Nitro node-server preset) |
 | Live data | WAQI (World Air Quality Index) API |
 
 ---
@@ -44,7 +66,7 @@ src/
 │   ├── InsightBanner.tsx           # Rotating personalized insight cards
 │   └── AppShell.tsx                # Navigation shell (sidebar + mobile nav)
 ├── routes/
-│   ├── auth.tsx                    # Sign in / sign up (Google OAuth + email)
+│   ├── auth.tsx                    # Sign in / sign up (Google OAuth + email + demo)
 │   └── _authenticated/
 │       ├── route.tsx                # Auth guard
 │       ├── dashboard.tsx            # Main dashboard (empty state + full view)
@@ -92,10 +114,11 @@ Run `supabase-schema.sql` in the Supabase SQL Editor to create the required tabl
 
 ## Deployment
 
-Deployed on **Railway** using the Nitro `node-server` preset (TanStack Start's SSR output runs as a standard Node process rather than a serverless function).
+Deployed on **Railway** using the Nitro `node-server` preset — TanStack Start's SSR output runs as a standard Node process.
 
 Key config files:
 - `railway.json` — build/start commands and Node 20 runtime
+- `.nvmrc` — pins Node version for the build environment
 - `vite.config.ts` — Nitro preset configuration
 
 Required environment variables on the host:
@@ -123,3 +146,7 @@ SUPABASE_SERVICE_ROLE_KEY
 ## Built with
 
 Scaffolded in [Lovable](https://lovable.dev), customized in VS Code, and deployed on [Railway](https://railway.app).
+
+Free forever · No credit card required · Works on mobile
+
+© 2026 Leafstep · Built for a cooler planet 🌱
